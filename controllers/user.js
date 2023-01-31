@@ -1,19 +1,11 @@
-const formData = require("form-data");
-const MailGun = require("mailgun.js");
-
-const mailgun = new MailGun(formData);
-const client = mailgun.client({
-  username: "api",
-  key: process.env.API_KEY,
-});
-
 const User = require("../models/student");
 const EmailToken = require("../models/emailToken");
 
+const hashPassword = require("../config/hashed_password");
 const { serverError, successResponse } = require("../config/apiResponses");
 const { addImage } = require("../config/uploading_cloudinary");
-const hashPassword = require("../config/hashed_password");
 const { generateOTP } = require("../config/OTP");
+const { sendEmail } = require("../config/mailGun");
 exports.registerUser = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
@@ -43,7 +35,7 @@ exports.registerUser = async (req, res) => {
       subject: "Hello",
       text: OTP,
     };
-    const result = client.messages.create(process.env.DOMAIN, messageData);
+    const result = await sendEmail(messageData);
 
     return successResponse(
       req,
