@@ -1,3 +1,12 @@
+const formData = require("form-data");
+const MailGun = require("mailgun.js");
+
+const mailgun = new MailGun(formData);
+const client = mailgun.client({
+  username: "api",
+  key: process.env.API_KEY,
+});
+
 const User = require("../models/student");
 const EmailToken = require("../models/emailToken");
 
@@ -27,11 +36,20 @@ exports.registerUser = async (req, res) => {
       token: OTP,
     });
     await newToken.save();
+
+    const messageData = {
+      from: `Excited User ${process.env.FROM_EMAIL}`,
+      to: newUser.email,
+      subject: "Hello",
+      text: OTP,
+    };
+    const result = client.messages.create(process.env.DOMAIN, messageData);
+
     return successResponse(
       req,
       res,
       "OTP sent to corresponding email address",
-      null
+      result
     );
   } catch (error) {
     return serverError(req, res, error);
