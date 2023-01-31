@@ -102,3 +102,15 @@ exports.loginUser = async (req, res) => {
     return serverError(req, res, error);
   }
 };
+
+exports.profile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return errorResponse(req, res, 404, "User not found");
+    }
+    return successResponse(req, res, null, user);
+  } catch (error) {
+    return serverError(req, res, error);
+  }
+};
