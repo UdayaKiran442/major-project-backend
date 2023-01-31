@@ -48,13 +48,35 @@ exports.registerUser = async (req, res) => {
       text: OTP,
     };
     const result = await sendEmail(messageData);
-
     return successResponse(
       req,
-      res,
       "OTP sent to corresponding email address",
       result
     );
+  } catch (error) {
+    return serverError(req, res, error);
+  }
+};
+
+exports.verifyUser = async (req, res) => {
+  try {
+    const { userId, OTP } = req.body;
+    const user = await User.findById(userId);
+    if (!user) {
+      return errorResponse(req, res, 404, "Invalid OTP");
+    }
+
+    const token = await EmailToken.findOne({
+      userId,
+      token: OTP,
+    });
+    if (!token) {
+      return errorResponse(req, res, 404, "Invalid OTP");
+    }
+    user.isVerified = true;
+    await token.remove();
+    await user.save();
+    return successResponse(req, res, "User verified", null);
   } catch (error) {
     return serverError(req, res, error);
   }
