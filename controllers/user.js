@@ -2,13 +2,25 @@ const User = require("../models/student");
 const EmailToken = require("../models/emailToken");
 
 const hashPassword = require("../config/hashed_password");
-const { serverError, successResponse } = require("../config/apiResponses");
+const {
+  serverError,
+  successResponse,
+  errorResponse,
+} = require("../config/apiResponses");
 const { addImage } = require("../config/uploading_cloudinary");
 const { generateOTP } = require("../config/OTP");
 const { sendEmail } = require("../config/mailGun");
 exports.registerUser = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
+    const user = await User.findOne({ email });
+    if (user) {
+      return errorResponse(req, res, 400, "User already exists");
+    }
+    const user_phone = await User.findOne({ phone });
+    if (user_phone) {
+      return errorResponse(req, res, 400, "Phone number already exists");
+    }
     const encryptedPassword = await hashPassword(password);
     const newUser = new User({
       name,
