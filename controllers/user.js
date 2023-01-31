@@ -10,6 +10,8 @@ const {
 const { addImage } = require("../config/uploading_cloudinary");
 const { generateOTP } = require("../config/OTP");
 const { sendEmail } = require("../config/mailGun");
+const comparePassword = require("../config/compare_password");
+const generateToken = require("../config/jsonwebtoken");
 exports.registerUser = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
@@ -50,6 +52,7 @@ exports.registerUser = async (req, res) => {
     const result = await sendEmail(messageData);
     return successResponse(
       req,
+      res,
       "OTP sent to corresponding email address",
       result
     );
@@ -77,6 +80,24 @@ exports.verifyUser = async (req, res) => {
     await token.remove();
     await user.save();
     return successResponse(req, res, "User verified", null);
+  } catch (error) {
+    return serverError(req, res, error);
+  }
+};
+
+exports.loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return errorResponse(req, res, 404, "Invalid email/password");
+    }
+    const isSame = comparePassword(password, user.password);
+    if (!isSame) {
+      return errorResponse(req, res, 404, "Invalid email/password");
+    }
+    const token = generateToken(user._id);
+    return successResponse(req, res, null, token);
   } catch (error) {
     return serverError(req, res, error);
   }
