@@ -4,6 +4,7 @@ const EmailToken = require("../models/emailToken");
 const { serverError, successResponse } = require("../config/apiResponses");
 const { addImage } = require("../config/uploading_cloudinary");
 const hashPassword = require("../config/hashed_password");
+const { generateOTP } = require("../config/OTP");
 exports.registerUser = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
@@ -20,6 +21,12 @@ exports.registerUser = async (req, res) => {
       newUser.avatar.url = secure_url;
     }
     await newUser.save();
+    const OTP = generateOTP();
+    const newToken = new EmailToken({
+      userId: newUser._id,
+      token: OTP,
+    });
+    await newToken.save();
     return successResponse(
       req,
       res,

@@ -6,7 +6,7 @@ const emailTokenSchema = new mongoose.Schema({
     ref: "User",
   },
   token: {
-    type: Number,
+    type: String,
   },
   createdAt: {
     type: Date,
