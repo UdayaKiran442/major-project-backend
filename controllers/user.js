@@ -92,7 +92,7 @@ exports.loginUser = async (req, res) => {
     if (!user) {
       return errorResponse(req, res, 404, "Invalid email/password");
     }
-    const isSame = comparePassword(password, user.password);
+    const isSame = await comparePassword(password, user.password);
     if (!isSame) {
       return errorResponse(req, res, 404, "Invalid email/password");
     }
@@ -110,6 +110,34 @@ exports.profile = async (req, res) => {
       return errorResponse(req, res, 404, "User not found");
     }
     return successResponse(req, res, null, user);
+  } catch (error) {
+    return serverError(req, res, error);
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { password, newPassword, confirmNewPassword } = req.body;
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return errorResponse(req, res, 404, "User not found");
+    }
+    const isSame = await comparePassword(password, user.password);
+    if (!isSame) {
+      return errorResponse(req, res, 401, "Incorrect password");
+    }
+    if (newPassword !== confirmNewPassword) {
+      return errorResponse(
+        req,
+        res,
+        401,
+        "Password and confirm password must be same"
+      );
+    }
+    const encryptedPassword = await hashPassword(newPassword);
+    user.password = encryptedPassword;
+    await user.save();
+    return successResponse(req, res, "Password Updated", null);
   } catch (error) {
     return serverError(req, res, error);
   }
