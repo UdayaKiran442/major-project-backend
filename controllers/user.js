@@ -3,6 +3,8 @@ const EmailToken = require("../models/emailToken");
 const ForgotPasswordToken = require("../models/forgotPasswordToken");
 
 const hashPassword = require("../config/hashed_password");
+const comparePassword = require("../config/compare_password");
+const generateToken = require("../config/jsonwebtoken");
 const {
   serverError,
   successResponse,
@@ -11,8 +13,6 @@ const {
 const { addImage } = require("../config/uploading_cloudinary");
 const { generateOTP } = require("../config/OTP");
 const { sendEmail } = require("../config/mailGun");
-const comparePassword = require("../config/compare_password");
-const generateToken = require("../config/jsonwebtoken");
 exports.registerUser = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
@@ -51,11 +51,12 @@ exports.registerUser = async (req, res) => {
       text: OTP,
     };
     const result = await sendEmail(messageData);
+    const userResponse = newUser.email;
     return successResponse(
       req,
       res,
       "OTP sent to corresponding email address",
-      result
+      userResponse
     );
   } catch (error) {
     return serverError(req, res, error);
@@ -70,11 +71,11 @@ exports.verifyUser = async (req, res) => {
       return errorResponse(req, res, 404, "Invalid OTP");
     }
 
-    const token = await EmailToken.findOne({
-      userId,
-      token: OTP,
-    });
+    const token = await EmailToken.findOne(userId);
     if (!token) {
+      return errorResponse(req, res, 404, "Invalid user");
+    }
+    if (token.token !== OTP) {
       return errorResponse(req, res, 404, "Invalid OTP");
     }
     user.isVerified = true;
@@ -173,12 +174,9 @@ exports.forgotPassword = async (req, res) => {
 exports.changeForgotPassword = async (req, res) => {
   try {
     const { email, OTP, newPassword } = req.body;
-    const userToken = await ForgotPasswordToken.findOne({
-      email,
-      token: OTP,
-    });
+    const userToken = await ForgotPasswordToken.findOne({ email });
     const user = await User.findOne({ email });
-    if (!userToken) {
+    if (userToken.token !== OTP) {
       return errorResponse(req, res, 404, "Invalid token");
     }
     if (!user) {
