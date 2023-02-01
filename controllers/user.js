@@ -1,5 +1,6 @@
 const User = require("../models/student");
 const EmailToken = require("../models/emailToken");
+const ForgotPasswordToken = require("../models/forgotPasswordToken");
 
 const hashPassword = require("../config/hashed_password");
 const {
@@ -138,6 +139,56 @@ exports.resetPassword = async (req, res) => {
     user.password = encryptedPassword;
     await user.save();
     return successResponse(req, res, "Password Updated", null);
+  } catch (error) {
+    return serverError(req, res, error);
+  }
+};
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return errorResponse(req, res, 404, "Email not found , Invalid email");
+    }
+    const OTP = await generateOTP();
+    const newToken = new ForgotPasswordToken({
+      email,
+      token: OTP,
+    });
+    await newToken.save();
+    const messageData = {
+      from: `Excited User ${process.env.FROM_EMAIL}`,
+      to: email,
+      subject: "Hello",
+      text: `Your otp to get a new password is ${OTP}`,
+    };
+    await sendEmail(messageData);
+    return successResponse(req, res, "OTP send to your mail id", email);
+  } catch (error) {
+    return serverError(req, res, error);
+  }
+};
+
+exports.changeForgotPassword = async (req, res) => {
+  try {
+    const { email, OTP, newPassword } = req.body;
+    const userToken = await ForgotPasswordToken.findOne({
+      email,
+      token: OTP,
+    });
+    const user = await User.findOne({ email });
+    if (!userToken) {
+      return errorResponse(req, res, 404, "Invalid token");
+    }
+    if (!user) {
+      return errorResponse(req, res, 404, "Invalid email");
+    }
+    const encryptedPassword = await hashPassword(newPassword);
+    user.password = encryptedPassword;
+    await user.save();
+    await userToken.remove();
+    return successResponse(req, res, "Password changed succesfully", null);
   } catch (error) {
     return serverError(req, res, error);
   }
