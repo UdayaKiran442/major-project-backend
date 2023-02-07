@@ -37,30 +37,34 @@ exports.registerUser = async (req, res) => {
       newUser.avatar.url = secure_url;
     }
     await newUser.save();
-    const OTP = generateOTP();
-    const newToken = new EmailToken({
-      userId: newUser._id,
-      token: OTP,
-    });
-    await newToken.save();
-
-    const messageData = {
-      from: `Excited User ${process.env.FROM_EMAIL}`,
-      to: newUser.email,
-      subject: "Hello",
-      text: OTP,
-    };
-    const result = await sendEmail(messageData);
-    const userResponse = newUser.email;
-    return successResponse(
-      req,
-      res,
-      "OTP sent to corresponding email address",
-      userResponse
-    );
+    return successResponse(req, res, "User registered succesfully", newUser);
   } catch (error) {
     return serverError(req, res, error);
   }
+};
+
+exports.saveOTP = async (req, res) => {
+  const { userId } = req.body;
+  const user = await User.findById(userId);
+  const otp = generateOTP();
+  const newToken = new EmailToken({
+    userId,
+    token: otp,
+  });
+  const messageData = {
+    from: `Excited User ${process.env.FROM_EMAIL}`,
+    to: user.email,
+    subject: "Hello",
+    text: otp,
+  };
+  await sendEmail(messageData);
+  await newToken.save();
+  return successResponse(
+    req,
+    res,
+    "OTP sent to corresponding email address",
+    otp
+  );
 };
 
 exports.verifyUser = async (req, res) => {
