@@ -69,13 +69,14 @@ exports.saveOTP = async (req, res) => {
 
 exports.verifyUser = async (req, res) => {
   try {
-    const { userId, OTP } = req.body;
+    const { OTP } = req.body;
+    const { userId } = req.params;
     const user = await User.findById(userId);
     if (!user) {
       return errorResponse(req, res, 404, "Invalid OTP");
     }
 
-    const token = await EmailToken.findOne(userId);
+    const token = await EmailToken.findOne({ userId: userId });
     if (!token) {
       return errorResponse(req, res, 404, "Invalid user");
     }
