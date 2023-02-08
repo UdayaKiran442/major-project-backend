@@ -103,7 +103,7 @@ exports.loginUser = async (req, res) => {
       return errorResponse(req, res, 404, "Invalid email/password");
     }
     const token = generateToken(user._id);
-    return successResponse(req, res, null, token);
+    return successResponse(req, res, "Login succesfull", token);
   } catch (error) {
     return serverError(req, res, error);
   }
