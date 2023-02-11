@@ -15,7 +15,7 @@ const { generateOTP } = require("../config/OTP");
 const { sendEmail } = require("../config/mailGun");
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, phone, password } = req.body;
+    const { name, email, phone, password, avatar } = req.body;
     const user = await User.findOne({ email });
     if (user) {
       return errorResponse(req, res, 400, "User already exists");
@@ -31,8 +31,8 @@ exports.registerUser = async (req, res) => {
       phone: parseInt(phone),
       password: encryptedPassword,
     });
-    if (req.file) {
-      const { public_id, secure_url } = await addImage(req.file.path);
+    if (avatar) {
+      const { public_id, secure_url } = await addImage(avatar);
       newUser.avatar.public_id = public_id;
       newUser.avatar.url = secure_url;
     }
