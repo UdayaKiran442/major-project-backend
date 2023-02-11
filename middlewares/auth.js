@@ -5,7 +5,7 @@ const { errorResponse, serverError } = require("../config/apiResponses");
 
 exports.isAuthenticated = async (req, res, next) => {
   try {
-    const token = req.headers.authorization;
+    const token = req.headers.Authorization;
     if (!token) {
       return errorResponse(req, res, 401, "Login to perform an action");
     }
