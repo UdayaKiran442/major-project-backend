@@ -176,21 +176,43 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-exports.changeForgotPassword = async (req, res) => {
+exports.verifyForgotPasswordOTP = async (req, res) => {
   try {
-    const { email, OTP, newPassword } = req.body;
+    const { email, OTP } = req.body;
     const userToken = await ForgotPasswordToken.findOne({ email });
-    const user = await User.findOne({ email });
     if (userToken.token !== OTP) {
       return errorResponse(req, res, 404, "Invalid token");
     }
+    await userToken.remove();
+    return successResponse(
+      req,
+      res,
+      "OTP verified! Now you can change your password",
+      email
+    );
+  } catch (error) {
+    return serverError(req, res, error);
+  }
+};
+
+exports.changeForgotPassword = async (req, res) => {
+  try {
+    const { email, newPassword, confirmNewPassword } = req.body;
+    const user = await User.findOne({ email });
     if (!user) {
       return errorResponse(req, res, 404, "Invalid email");
+    }
+    if (newPassword !== confirmNewPassword) {
+      return errorResponse(
+        req,
+        res,
+        400,
+        "New password and confirm new password must be same"
+      );
     }
     const encryptedPassword = await hashPassword(newPassword);
     user.password = encryptedPassword;
     await user.save();
-    await userToken.remove();
     return successResponse(req, res, "Password changed succesfully", null);
   } catch (error) {
     return serverError(req, res, error);

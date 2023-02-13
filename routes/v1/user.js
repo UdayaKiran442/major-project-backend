@@ -10,6 +10,7 @@ const {
   forgotPassword,
   changeForgotPassword,
   saveOTP,
+  verifyForgotPasswordOTP,
 } = require("../../controllers/user");
 const { isAuthenticated } = require("../../middlewares/auth");
 
@@ -20,6 +21,7 @@ router.post("/login-user", loginUser);
 router.post("/user-profile", isAuthenticated, profile);
 router.post("/reset-password", isAuthenticated, resetPassword);
 router.post("/forgot-password", forgotPassword);
+router.post("/forgot-password/verify-otp", verifyForgotPasswordOTP);
 router.post("/reset-forgot-password", changeForgotPassword);
 
 module.exports = router;
