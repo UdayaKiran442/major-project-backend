@@ -8,6 +8,8 @@ const {
 } = require("../config/apiResponses");
 const { addImage } = require("../config/uploading_cloudinary");
 
+const ApiFeature = require("../utils/apiFeature");
+
 exports.createPost = async (req, res) => {
   try {
     const { content, link, category, image } = req.body;
@@ -37,7 +39,11 @@ exports.createPost = async (req, res) => {
 
 exports.getAllCGDCPosts = async (req, res) => {
   try {
-    const cgdcPosts = await POST_CGDC.find().populate("user");
+    const apiFeatures = new ApiFeature(
+      POST_CGDC.find().populate("user"),
+      req.query
+    ).filter();
+    const cgdcPosts = await apiFeatures.query;
     return successResponse(req, res, null, cgdcPosts);
   } catch (error) {
     return serverError(req, res, error);
