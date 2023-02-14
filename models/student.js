@@ -26,8 +26,15 @@ const studentSchema = new mongoose.Schema({
   },
   role: {
     type: String,
+    enum: ["user", "cgdc"],
     default: "user",
   },
+  posts: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CGDCPosts",
+    },
+  ],
 });
 
 const Student = mongoose.model("User", studentSchema);
