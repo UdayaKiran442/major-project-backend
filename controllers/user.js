@@ -103,7 +103,13 @@ exports.loginUser = async (req, res) => {
     if (!isSame) {
       return errorResponse(req, res, 404, "Invalid email/password");
     }
-    const token = generateToken(user._id, user.name, user.email);
+    const token = generateToken(
+      user._id,
+      user.name,
+      user.email,
+      user.role,
+      user.phone
+    );
     return successResponse(req, res, "Login succesfull", token);
   } catch (error) {
     return serverError(req, res, error);
