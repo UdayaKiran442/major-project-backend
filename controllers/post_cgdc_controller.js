@@ -6,7 +6,7 @@ const {
   errorResponse,
   successResponse,
 } = require("../config/apiResponses");
-const { addImage } = require("../config/uploading_cloudinary");
+const { addImage, destroyImage } = require("../config/uploading_cloudinary");
 
 const ApiFeature = require("../utils/apiFeature");
 
@@ -45,6 +45,34 @@ exports.getAllCGDCPosts = async (req, res) => {
     ).filter();
     const cgdcPosts = await apiFeatures.query;
     return successResponse(req, res, null, cgdcPosts);
+  } catch (error) {
+    return serverError(req, res, error);
+  }
+};
+
+exports.updateCGDCPost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { image } = req.body;
+    const user = await User.findById(req.user._id);
+    const post = await POST_CGDC.findById(postId);
+    if (!post) {
+      return errorResponse(req, res, 404, "Post not found");
+    }
+    if (user.role !== "cgdc") {
+      return errorResponse(req, res, 401, "Unauthorized");
+    }
+    const updatedCGDCPost = await POST_CGDC.findByIdAndUpdate(postId, req.body);
+    if (image) {
+      if (updatedCGDCPost.image && updatedCGDCPost.image.public_id) {
+        await destroyImage(updatedCGDCPost.image.public_id);
+      }
+      const { public_id, secure_url } = await addImage(image);
+      updatedCGDCPost.image.public_id = public_id;
+      updatedCGDCPost.image.url = secure_url;
+    }
+    await updatedCGDCPost.save();
+    return successResponse(req, res, "Post updated succesfully", null);
   } catch (error) {
     return serverError(req, res, error);
   }
