@@ -77,3 +77,38 @@ exports.updateCGDCPost = async (req, res) => {
     return serverError(req, res, error);
   }
 };
+
+exports.getCGDCPostById = async (req, res) => {
+  try {
+    const post_cgdc = await POST_CGDC.findById(req.params.id).populate("user");
+    if (!post_cgdc) {
+      return errorResponse(req, res, 404, "Post not found");
+    }
+    return successResponse(req, res, null, post_cgdc);
+  } catch (error) {
+    return serverError(req, res, error);
+  }
+};
+
+exports.deleteCGDCPost = async (req, res) => {
+  try {
+    const post_cgdc = await POST_CGDC.findById(req.params.id);
+    const user = await User.findById(req.user._id);
+    if (!post_cgdc) {
+      return errorResponse(req, res, 404, "Post not found");
+    }
+    if (user.role !== "cgdc") {
+      return errorResponse(req, res, 401, "Unauthorized");
+    }
+    const index = user.posts.indexOf(post_cgdc._id);
+    user.posts.splice(index, 1);
+    if (post_cgdc.image && post_cgdc.image.public_id) {
+      await destroyImage(post_cgdc.image.public_id);
+    }
+    await post_cgdc.remove();
+    await user.save();
+    return successResponse(req, res, "Post deleted succesfully", null);
+  } catch (error) {
+    return serverError(req, res, error);
+  }
+};
