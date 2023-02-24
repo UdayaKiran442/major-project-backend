@@ -57,7 +57,7 @@ exports.getAllCGDCPosts = async (req, res) => {
 exports.updateCGDCPost = async (req, res) => {
   try {
     const { postId } = req.params;
-    const { image } = req.body;
+    // const { image } = req.body;
     const user = await User.findById(req.user._id);
     const post = await POST_CGDC.findById(postId);
     if (!post) {
@@ -67,14 +67,18 @@ exports.updateCGDCPost = async (req, res) => {
       return errorResponse(req, res, 401, "Unauthorized");
     }
     const updatedCGDCPost = await POST_CGDC.findByIdAndUpdate(postId, req.body);
-    if (image) {
-      if (updatedCGDCPost.image && updatedCGDCPost.image.public_id) {
-        await destroyImage(updatedCGDCPost.image.public_id);
-      }
-      const { public_id, secure_url } = await addImage(image);
-      updatedCGDCPost.image.public_id = public_id;
-      updatedCGDCPost.image.url = secure_url;
-    }
+    // if (image) {
+    //   if (updatedCGDCPost.image && updatedCGDCPost.image.public_id) {
+    //     await destroyImage(updatedCGDCPost.image.public_id);
+    //   }
+    //   const { public_id, secure_url } = await addImage(image);
+    //   updatedCGDCPost.image.public_id = public_id;
+    //   updatedCGDCPost.image.url = secure_url;
+    // }
+
+    updatedCGDCPost.image.public_id = req.body.public_id;
+    updatedCGDCPost.image.url = req.body.secure_url;
+
     await updatedCGDCPost.save();
     return successResponse(req, res, "Post updated succesfully", null);
   } catch (error) {
