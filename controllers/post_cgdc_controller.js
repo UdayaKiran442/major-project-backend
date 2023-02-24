@@ -12,7 +12,7 @@ const ApiFeature = require("../utils/apiFeature");
 
 exports.createPost = async (req, res) => {
   try {
-    const { content, link, category, image } = req.body;
+    const { content, link, category, public_id, secure_url } = req.body;
     const user = await User.findById(req.user._id);
     if (user.role !== "cgdc") {
       return errorResponse(req, res, 401, "Unauthorized access");
@@ -22,12 +22,16 @@ exports.createPost = async (req, res) => {
       category,
       link,
       user: req.user._id,
+      image: {
+        public_id,
+        url: secure_url,
+      },
     });
-    if (image) {
-      const { public_id, secure_url } = await addImage(image);
-      newPost.image.public_id = public_id;
-      newPost.image.url = secure_url;
-    }
+    // if (image) {
+    //   const { public_id, secure_url } = await addImage(image);
+    //   newPost.image.public_id = public_id;
+    //   newPost.image.url = secure_url;
+    // }
     user.posts.push(newPost._id);
     await newPost.save();
     await user.save();
