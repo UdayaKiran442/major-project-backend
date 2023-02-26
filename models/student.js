@@ -35,6 +35,12 @@ const studentSchema = new mongoose.Schema({
       ref: "CGDCPosts",
     },
   ],
+  gatePassRequests: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Request",
+    },
+  ],
 });
 
 const Student = mongoose.model("User", studentSchema);
