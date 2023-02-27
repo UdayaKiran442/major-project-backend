@@ -27,6 +27,10 @@ const requestSchema = new mongoose.Schema({
   reason: {
     type: String,
   },
+  isAccepted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Request = mongoose.model("Request", requestSchema);
