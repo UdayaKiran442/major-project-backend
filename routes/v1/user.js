@@ -11,6 +11,7 @@ const {
   changeForgotPassword,
   saveOTP,
   verifyForgotPasswordOTP,
+  getGatePassRequestsAndUserById,
 } = require("../../controllers/user");
 const { isAuthenticated } = require("../../middlewares/auth");
 
@@ -23,5 +24,10 @@ router.post("/reset-password", isAuthenticated, resetPassword);
 router.post("/forgot-password", forgotPassword);
 router.post("/forgot-password/verify-otp", verifyForgotPasswordOTP);
 router.post("/reset-forgot-password", changeForgotPassword);
+router.post(
+  "/get-gate-passes-id",
+  isAuthenticated,
+  getGatePassRequestsAndUserById
+);
 
 module.exports = router;

@@ -224,3 +224,17 @@ exports.changeForgotPassword = async (req, res) => {
     return serverError(req, res, error);
   }
 };
+
+exports.getGatePassRequestsAndUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate({
+      path: "gatePassRequests",
+      populate: {
+        path: "warden",
+      },
+    });
+    return successResponse(req, res, null, user);
+  } catch (error) {
+    return serverError(req, res, error);
+  }
+};
