@@ -58,3 +58,17 @@ exports.profile = async (req, res) => {
     return serverError(req, res, error);
   }
 };
+
+exports.getGatePassRequests = async (req, res) => {
+  try {
+    const warden = await Warden.find().populate({
+      path: "requests",
+      populate: {
+        path: "warden",
+      },
+    });
+    return successResponse(req, res, null, warden);
+  } catch (error) {
+    return serverError(req, res, error);
+  }
+};

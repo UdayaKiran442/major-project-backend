@@ -21,7 +21,7 @@ const wardenSchema = new mongoose.Schema({
   requests: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Requests",
+      ref: "Request",
     },
   ],
   role: {
