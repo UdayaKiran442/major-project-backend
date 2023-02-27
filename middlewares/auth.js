@@ -4,10 +4,10 @@ const { decodedToken } = require("../config/decodedToken");
 
 exports.isAuthenticated = async (req, res, next) => {
   try {
-    const decoded = decodedToken();
+    const decoded = decodedToken(req, res);
     req.user = await User.findById(decoded._id);
     next();
   } catch (error) {
-    return serverError(req, res, "Internal server error at auth.js");
+    return serverError(req, res, error);
   }
 };
