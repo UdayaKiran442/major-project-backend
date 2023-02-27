@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const wardenSchema = mongoose.Schema({
+const wardenSchema = new mongoose.Schema({
   name: {
     type: String,
     require: true,
@@ -24,6 +24,10 @@ const wardenSchema = mongoose.Schema({
       ref: "Requests",
     },
   ],
+  role: {
+    type: String,
+    default: "warden",
+  },
 });
 
 const Warden = mongoose.model("Warden", wardenSchema);
