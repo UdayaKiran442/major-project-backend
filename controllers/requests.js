@@ -83,3 +83,40 @@ exports.rejectAcceptedRequest = async (req, res) => {
     return serverError(req, res, error);
   }
 };
+
+exports.acceptRejetedRequest = async (req, res) => {
+  try {
+    const request = await Requests.findById(req.params.id);
+    const warden = await Warden.findById(req.warden._id);
+    if (!warden) {
+      return errorResponse(req, res, 401, "Unauthorized");
+    }
+    if (!request.isRejected) {
+      return errorResponse(req, res, 400, "Request is not rejected");
+    }
+    request.isAccepted = true;
+    request.isRejected = false;
+    await request.save();
+    return successResponse(req, res, "Request accepted", request);
+  } catch (error) {
+    return serverError(req, res, error);
+  }
+};
+exports.setRequestInPendingMode = async (req, res) => {
+  try {
+    const request = await Requests.findById(req.params.id);
+    const warden = await Warden.findById(req.warden._id);
+    if (!warden) {
+      return errorResponse(req, res, 401, "Unauthorized");
+    }
+    if (!request.isRejected && !request.isAccepted) {
+      return errorResponse(req, res, 400, "Request is already in pending mode");
+    }
+    request.isAccepted = false;
+    request.isRejected = false;
+    await request.save();
+    return successResponse(req, res, "Request set to pending mode", request);
+  } catch (error) {
+    return serverError(req, res, error);
+  }
+};

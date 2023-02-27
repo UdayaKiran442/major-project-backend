@@ -7,6 +7,8 @@ const {
   acceptRequest,
   rejectRequest,
   rejectAcceptedRequest,
+  acceptRejetedRequest,
+  setRequestInPendingMode,
 } = require("../../controllers/requests");
 const { isWardenAuthenticated } = require("../../middlewares/wardenAuth");
 
@@ -17,6 +19,16 @@ router.post(
   "/reject-accepted-request/:id",
   isWardenAuthenticated,
   rejectAcceptedRequest
+);
+router.post(
+  "/accept-rejected-request/:id",
+  isWardenAuthenticated,
+  acceptRejetedRequest
+);
+router.post(
+  "/set-request-pending/:id",
+  isWardenAuthenticated,
+  setRequestInPendingMode
 );
 
 module.exports = router;
