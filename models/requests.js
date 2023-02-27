@@ -31,6 +31,10 @@ const requestSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isRejected: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Request = mongoose.model("Request", requestSchema);
