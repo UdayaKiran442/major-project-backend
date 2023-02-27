@@ -9,6 +9,7 @@ const {
   rejectAcceptedRequest,
   acceptRejetedRequest,
   setRequestInPendingMode,
+  getRequests,
 } = require("../../controllers/requests");
 const { isWardenAuthenticated } = require("../../middlewares/wardenAuth");
 
@@ -30,5 +31,7 @@ router.post(
   isWardenAuthenticated,
   setRequestInPendingMode
 );
+
+router.get("/", getRequests);
 
 module.exports = router;

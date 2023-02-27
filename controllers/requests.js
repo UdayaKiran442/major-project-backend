@@ -120,3 +120,14 @@ exports.setRequestInPendingMode = async (req, res) => {
     return serverError(req, res, error);
   }
 };
+
+exports.getRequests = async (req, res) => {
+  try {
+    const requests = await Requests.find({})
+      .populate("student", "name email phone hostelName")
+      .populate("warden", "name email hostelName");
+    return successResponse(req, res, null, requests);
+  } catch (error) {
+    return serverError(req, res, error);
+  }
+};
