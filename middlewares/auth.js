@@ -1,5 +1,3 @@
-const jwt = require("jsonwebtoken");
-
 const User = require("../models/student");
 const { serverError } = require("../config/apiResponses");
 const { decodedToken } = require("../config/decodedToken");
