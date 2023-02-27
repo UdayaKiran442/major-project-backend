@@ -29,6 +29,10 @@ const studentSchema = new mongoose.Schema({
     enum: ["user", "cgdc"],
     default: "user",
   },
+  hostelName: {
+    type: String,
+    enum: ["Apt-A", "Apt-B", "Apt-C", "Apt-D", "newtower", "oldtower"],
+  },
   posts: [
     {
       type: mongoose.Schema.Types.ObjectId,
