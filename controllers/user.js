@@ -108,7 +108,8 @@ exports.loginUser = async (req, res) => {
       user.name,
       user.email,
       user.role,
-      user.phone
+      user.phone,
+      user.hostelName
     );
     return successResponse(req, res, "Login succesfull", token);
   } catch (error) {
