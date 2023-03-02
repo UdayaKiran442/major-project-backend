@@ -64,7 +64,7 @@ exports.getGatePassRequests = async (req, res) => {
     const warden = await Warden.find().populate({
       path: "requests",
       populate: {
-        path: "warden",
+        path: "student",
       },
     });
     return successResponse(req, res, null, warden);
