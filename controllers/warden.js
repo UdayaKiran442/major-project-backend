@@ -61,12 +61,15 @@ exports.profile = async (req, res) => {
 
 exports.getGatePassRequests = async (req, res) => {
   try {
-    const warden = await Warden.find().populate({
-      path: "requests",
-      populate: {
-        path: "student",
-      },
-    });
+    const warden = await Warden.findById(req.warden._id)
+      .select("-password")
+      .populate({
+        path: "requests",
+        populate: {
+          path: "student",
+          select: "name email phone hostelName",
+        },
+      });
     return successResponse(req, res, null, warden);
   } catch (error) {
     return serverError(req, res, error);
