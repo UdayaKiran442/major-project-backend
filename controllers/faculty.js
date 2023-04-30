@@ -117,3 +117,21 @@ exports.addFreeTime = async (req, res) => {
     facultyFreeDay,
   });
 };
+
+exports.getFacultyFreeTimings = async (req, res) => {
+  try {
+    const { facultyId } = req.body;
+    const freeTimeSlots = await FreeTimings.find({
+      faculty: facultyId,
+    }).populate("faculty");
+    return res.status(200).json({
+      success: true,
+      freeTimeSlots,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
