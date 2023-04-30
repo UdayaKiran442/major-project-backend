@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 
 const hashPassword = require("../config/hashed_password");
 const comparePassword = require("../config/compare_password");
+const ApiFeature = require("../utils/apiFeature");
 
 exports.registerFaculty = async (req, res) => {
   try {
@@ -62,7 +63,8 @@ exports.loginFaculty = async (req, res) => {
       }
     );
     return res.status(200).json({
-      messsage: "Login succesfull",
+      success: true,
+      message: "Login successfull",
       faculty,
       token,
     });
@@ -128,6 +130,22 @@ exports.getFacultyFreeTimings = async (req, res) => {
     return res.status(200).json({
       success: true,
       freeTimeSlots,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+exports.allFaculty = async (req, res) => {
+  try {
+    const apiFeatures = new ApiFeature(Faculty.find(), req.query).search();
+    const faculties = await apiFeatures.query;
+    return res.status(200).json({
+      success: true,
+      faculties,
     });
   } catch (error) {
     return res.status(500).json({
