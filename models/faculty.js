@@ -30,6 +30,10 @@ const facultySchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  role: {
+    type: String,
+    default: "faculty",
+  },
 });
 
 const Faculty = mongoose.model("Faculty", facultySchema);

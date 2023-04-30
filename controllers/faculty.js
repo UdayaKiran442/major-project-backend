@@ -54,6 +54,7 @@ exports.loginFaculty = async (req, res) => {
         department: faculty.department,
         cabinNumber: faculty.cabinNumber,
         postType: faculty.postType,
+        role: faculty.role,
       },
       process.env.JWT_SECRET,
       {
