@@ -96,3 +96,24 @@ exports.addFreeDay = async (req, res) => {
     return res.status(500).json({ error: error.messsage });
   }
 };
+
+exports.addFreeTime = async (req, res) => {
+  const { faculty } = req;
+  const { freeTimeSlot, freeDay } = req.body;
+  const facultyFreeDay = await FreeTimings.findOne({
+    faculty: faculty._id,
+    freeDay,
+  });
+  if (!facultyFreeDay) {
+    return res.status(404).json({
+      success: false,
+      error: "Faculty free day/faculty not found",
+    });
+  }
+  facultyFreeDay.freeTimings.push(freeTimeSlot);
+  await facultyFreeDay.save();
+  return res.status(200).json({
+    success: true,
+    facultyFreeDay,
+  });
+};
