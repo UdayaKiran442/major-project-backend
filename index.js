@@ -15,6 +15,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //app.use(bodyParser.raw({ type: 'multipart/form-data' }));
 app.use(bodyParser.raw({ type: "multipart/form-data" }));
 
+app.get("/", (req, res) => {
+  res.send("Hi");
+});
 app.use("/", require("./routes/index"));
 
 const port = process.env.PORT;

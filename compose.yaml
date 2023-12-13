@@ -1,0 +1,86 @@
+# # Comments are provided throughout this file to help you get started.
+# # If you need more help, visit the Docker compose reference guide at
+# # https://docs.docker.com/compose/compose-file/
+
+# # Here the instructions define your application as a service called "server".
+# # This service is built from the Dockerfile in the current directory.
+# # You can add other services your application may depend on here, such as a
+# # database or a cache. For examples, see the Awesome Compose repository:
+# # https://github.com/docker/awesome-compose
+# services:
+#   server:
+#     build:
+#       context: .
+#     environment:
+
+#       NODE_ENV: production
+#       # POSTGRES_HOST: db
+#       MONGO_INITDB_ROOT_USERNAME: localhost
+#       MONGO_INITDB_ROOT_PASSWORD: example
+#       # MONGO_DB: majorproject
+#     ports:
+#       - 3000:3000
+#     # The commented out section below is an example of how to define a PostgreSQL
+#     # database that your application can use. `depends_on` tells Docker Compose to
+#     # start the database before your application. The `db-data` volume persists the
+#     # database data between container restarts. The `db-password` secret is used
+#     # to set the database password. You must create `db/password.txt` and add
+#     # a password of your choosing to it before running `docker-compose up`.
+
+#   db:
+#     image: mongo
+#     restart: always
+#     user: admin
+#     volumes:
+#       - db-data:/var/lib/mongodb/data
+#     environment:
+#       # - MONGO_DB=majorproject
+#       ME_CONFIG_MONGODB_ADMINUSERNAME: root
+#       ME_CONFIG_MONGODB_ADMINPASSWORD: example
+#       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+#     # depends_on:
+#     #   - mongo
+#     expose:
+#       - 27017
+# volumes:
+#   db-data:
+
+version: "3.9"
+
+services:
+  mongo_db:
+    container_name: db_container
+    image: mongo:latest
+    restart: always
+    volumes:
+      - mongo_db:/data/db
+    ports:
+      - 27017:27017
+
+  api:
+    build: .
+    ports:
+      - 3000:3000
+    environment:
+      PORT: 3000
+      MONGODB_URI: mongodb://mongo_db:27017
+      MAILGUN_API: /run/secrets/mailgun-api
+      MAILGUN_DOMAIN: /run/secrets/mailgun-domain
+      JWT_SECRET: /run/secrets/jwt-secret
+    depends_on:
+      - mongo_db
+    secrets:
+      - jwt-secret
+      - mailgun-api
+      - mailgun-domain
+
+volumes:
+  mongo_db: {}
+
+secrets:
+  jwt-secret:
+    file: secrets/jwt.txt
+  mailgun-api:
+    file: secrets/api.txt
+  mailgun-domain:
+    file: secrets/domain.txt
