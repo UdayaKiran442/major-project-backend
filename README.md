@@ -29,3 +29,11 @@
 - Pushed the image to docker hub.
 - Docker configuration is defined in `compose.yaml` and commands to execute containarisation along with dependency installments is defined in `Dockerfile`.
 - Utilised AWS code pipeline to configure CI/CD. Hence whenever there is a commit AWS will automate the build and deployment process.
+
+## Setting up the project
+
+- You need to have docker desktop and docker cli installed in your local machine.
+- You need to have Node18 and git installed in you local machine.
+- Clone the git repository.
+- Create the folder with name secrets. Under the secrets folder create jwt.txt, api.txt, domain.txt and enter jwt secret, mail gun api and mail gun domain values respectively.
+- For mail gun api and domain values go to mail gun website and create an account.
