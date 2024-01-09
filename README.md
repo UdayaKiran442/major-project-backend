@@ -37,3 +37,4 @@
 - Clone the git repository.
 - Create the folder with name secrets. Under the secrets folder create jwt.txt, api.txt, domain.txt and enter jwt secret, mail gun api and mail gun domain values respectively.
 - For mail gun api and domain values go to mail gun website and create an account.
+- Pull the docker container using command ```docker pull udayagonuguntla/campus-management-node-apis ``` and run the container to test the api's in postman.
