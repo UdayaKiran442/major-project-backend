@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.raw({ type: "multipart/form-data" }));
 
 app.get("/", (req, res) => {
-  res.send("Hi");
+  res.send("Hi, code is successfully deployed");
 });
 app.use("/", require("./routes/index"));
 
