@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.raw({ type: "multipart/form-data" }));
 
 app.get("/", (req, res) => {
-  res.send("Hi, code is successfully deployed");
+  res.send("Hi, code is successfully deployed using AWS EC2");
 });
 app.use("/", require("./routes/index"));
 
